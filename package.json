@@ -1,0 +1,35 @@
+{
+  "name": "mini-browser",
+  "version": "1.1.7",
+  "description": "A minimal Electron browser for text content",
+  "main": "src/main.js",
+  "scripts": {
+    "start": "electron .",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build:mac": "electron-builder --mac --arm64",
+    "build:mac-universal": "electron-builder --mac --universal"
+  },
+  "build": {
+    "productName": "摸鱼浏览器",
+    "mac": {
+      "icon": "assets/icons/fish.png",
+      "target": "dmg"
+    },
+    "win": {
+      "icon": "assets/icons/fish.ico",
+      "target": "nsis"
+    },
+    "linux": {
+      "icon": "assets/icons/fish.png",
+      "target": "AppImage"
+    }
+  },
+  "dependencies": {
+  },
+  "devDependencies": {
+    "electron": "^28.0.0",
+    "electron-builder": "^24.11.0"
+  },
+  "author": "",
+  "license": "ISC"
+}
