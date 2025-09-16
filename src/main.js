@@ -8,6 +8,29 @@ const bookmarksPath = path.join(app.getPath('userData'), 'bookmarks.json')
 const historyPath = path.join(app.getPath('userData'), 'history.json')
 // 透明度存储路径
 const opacityPath = path.join(app.getPath('userData'), 'opacity.json')
+// 窗口大小存储路径
+const windowSizePath = path.join(app.getPath('userData'), 'windowSize.json')
+
+// 读取窗口大小
+function loadWindowSize() {
+  try {
+    if (fs.existsSync(windowSizePath)) {
+      return JSON.parse(fs.readFileSync(windowSizePath, 'utf-8'))
+    }
+  } catch (e) {
+    console.error('读取窗口大小失败:', e)
+  }
+  return null
+}
+
+// 保存窗口大小
+function saveWindowSize(size) {
+  try {
+    fs.writeFileSync(windowSizePath, JSON.stringify(size), 'utf-8')
+  } catch (e) {
+    console.error('保存窗口大小失败:', e)
+  }
+}
 
 // 读取书签
 function loadBookmarks() {
@@ -397,11 +420,12 @@ function syncMainWindowOpacity(opacity) {
 
 function createWindow() {
   const { width, height } = screen.getPrimaryDisplay().workAreaSize
+  const savedSize = loadWindowSize()
 
-  // 创建浏览器窗口，大小为屏幕的70%（比原来的50%更大）
+  // 创建浏览器窗口，优先使用保存的大小，否则使用屏幕的70%
   mainWindow = new BrowserWindow({
-    width: Math.floor(width * 0.7),
-    height: Math.floor(height * 0.7),
+    width: savedSize?.width || Math.floor(width * 0.7),
+    height: savedSize?.height || Math.floor(height * 0.7),
     title: '摸鱼浏览器',
     webPreferences: {
       nodeIntegration: true
@@ -415,8 +439,21 @@ function createWindow() {
     opacity: loadOpacity()     // 读取存储的透明度值
   })
 
+  // 监听窗口大小变化并保存
+  mainWindow.on('resize', () => {
+    if (mainWindow && !mainWindow.isDestroyed()) {
+      const [currentWidth, currentHeight] = mainWindow.getSize()
+      saveWindowSize({ width: currentWidth, height: currentHeight })
+    }
+  })
+
   // 主窗口关闭时的处理
   mainWindow.on('closed', () => {
+    // 保存最后窗口大小
+    if (mainWindow && !mainWindow.isDestroyed()) {
+      const [currentWidth, currentHeight] = mainWindow.getSize()
+      saveWindowSize({ width: currentWidth, height: currentHeight })
+    }
     mainWindow = null
   })
 
