@@ -7,7 +7,9 @@
     "start": "electron .",
     "test": "echo \"Error: no test specified\" && exit 1",
     "build:mac": "electron-builder --mac --arm64",
-    "build:mac-universal": "electron-builder --mac --universal"
+    "build:mac-universal": "electron-builder --mac --universal",
+    "build:win": "electron-builder --win",
+    "build:linux": "electron-builder --linux"
   },
   "build": {
     "productName": "摸鱼浏览器",
